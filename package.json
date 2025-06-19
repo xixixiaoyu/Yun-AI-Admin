@@ -6,10 +6,18 @@
   "scripts": {
     "dev": "pnpm --parallel --filter \"./apps/*\" dev",
     "build": "pnpm --filter \"./packages/*\" build && pnpm --filter \"./apps/*\" build",
-    "lint": "pnpm --recursive lint",
-    "format": "prettier --write \"**/*.{js,ts,vue,json,md}\"",
-    "clean": "pnpm --recursive clean",
-    "test": "pnpm --recursive test"
+    "lint": "eslint . --ext .js,.ts,.vue --ignore-path .gitignore",
+    "lint:fix": "eslint . --ext .js,.ts,.vue --ignore-path .gitignore --fix",
+    "format": "prettier --write \"**/*.{js,ts,vue,json,md,yml,yaml}\"",
+    "format:check": "prettier --check \"**/*.{js,ts,vue,json,md,yml,yaml}\"",
+    "clean": "pnpm --recursive clean && rimraf dist coverage .nyc_output",
+    "test": "pnpm --recursive test",
+    "type-check": "pnpm --recursive type-check",
+    "prepare": "husky",
+    "docker:build": "docker-compose build",
+    "docker:up": "docker-compose up -d",
+    "docker:down": "docker-compose down",
+    "docker:logs": "docker-compose logs -f"
   },
   "keywords": [
     "admin",
@@ -31,5 +39,14 @@
     "node": ">=18.0.0",
     "pnpm": ">=8.0.0"
   },
-  "packageManager": "pnpm@8.12.0"
+  "packageManager": "pnpm@8.12.0",
+  "lint-staged": {
+    "*.{js,ts,vue}": [
+      "eslint --fix",
+      "prettier --write"
+    ],
+    "*.{json,md,yml,yaml}": [
+      "prettier --write"
+    ]
+  }
 }
