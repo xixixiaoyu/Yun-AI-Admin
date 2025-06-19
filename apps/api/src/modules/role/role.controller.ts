@@ -11,7 +11,12 @@ import {
   HttpCode,
   HttpStatus,
 } from '@nestjs/common';
-import { ApiTags, ApiOperation, ApiResponse, ApiBearerAuth } from '@nestjs/swagger';
+import {
+  ApiTags,
+  ApiOperation,
+  ApiResponse,
+  ApiBearerAuth,
+} from '@nestjs/swagger';
 import { RoleService } from './role.service';
 import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
 import { PermissionsGuard } from '../../common/guards/permissions.guard';
@@ -107,7 +112,10 @@ export class RoleController {
   @HttpCode(HttpStatus.OK)
   @ApiOperation({ summary: '分配角色权限' })
   @ApiResponse({ status: 200, description: '权限分配成功' })
-  async assignPermissions(@Param('id') id: string, @Body('permissionIds') permissionIds: string[]) {
+  async assignPermissions(
+    @Param('id') id: string,
+    @Body('permissionIds') permissionIds: string[],
+  ) {
     const result = await this.roleService.assignPermissions(id, permissionIds);
     return {
       success: true,

@@ -23,32 +23,32 @@ request.interceptors.request.use(
   },
   (error) => {
     return Promise.reject(error)
-  }
+  },
 )
 
 // 响应拦截器
 request.interceptors.response.use(
   (response: AxiosResponse<ApiResponse>) => {
     const { data } = response
-    
+
     // 如果是文件下载等特殊响应，直接返回
     if (response.config.responseType === 'blob') {
       return response
     }
-    
+
     // 处理业务错误
     if (data.success === false) {
       message.error(data.message || '请求失败')
       return Promise.reject(new Error(data.message || '请求失败'))
     }
-    
+
     return data
   },
   (error) => {
     // 处理 HTTP 错误
     if (error.response) {
       const { status, data } = error.response
-      
+
       switch (status) {
         case 401:
           message.error('未授权，请重新登录')
@@ -75,9 +75,9 @@ request.interceptors.response.use(
     } else {
       message.error('请求配置错误')
     }
-    
+
     return Promise.reject(error)
-  }
+  },
 )
 
 // 封装常用的请求方法
@@ -85,24 +85,28 @@ export const http = {
   get<T = any>(url: string, config?: AxiosRequestConfig): Promise<ApiResponse<T>> {
     return request.get(url, config)
   },
-  
+
   post<T = any>(url: string, data?: any, config?: AxiosRequestConfig): Promise<ApiResponse<T>> {
     return request.post(url, data, config)
   },
-  
+
   put<T = any>(url: string, data?: any, config?: AxiosRequestConfig): Promise<ApiResponse<T>> {
     return request.put(url, data, config)
   },
-  
+
   patch<T = any>(url: string, data?: any, config?: AxiosRequestConfig): Promise<ApiResponse<T>> {
     return request.patch(url, data, config)
   },
-  
+
   delete<T = any>(url: string, config?: AxiosRequestConfig): Promise<ApiResponse<T>> {
     return request.delete(url, config)
   },
-  
-  upload<T = any>(url: string, formData: FormData, config?: AxiosRequestConfig): Promise<ApiResponse<T>> {
+
+  upload<T = any>(
+    url: string,
+    formData: FormData,
+    config?: AxiosRequestConfig,
+  ): Promise<ApiResponse<T>> {
     return request.post(url, formData, {
       ...config,
       headers: {
@@ -111,7 +115,7 @@ export const http = {
       },
     })
   },
-  
+
   download(url: string, config?: AxiosRequestConfig): Promise<AxiosResponse<Blob>> {
     return request.get(url, {
       ...config,

@@ -6,8 +6,8 @@
   "scripts": {
     "dev": "pnpm --parallel --filter \"./apps/*\" dev",
     "build": "pnpm --filter \"./packages/*\" build && pnpm --filter \"./apps/*\" build",
-    "lint": "eslint . --ext .js,.ts,.vue --ignore-path .gitignore",
-    "lint:fix": "eslint . --ext .js,.ts,.vue --ignore-path .gitignore --fix",
+    "lint": "eslint .",
+    "lint:fix": "eslint . --fix",
     "format": "prettier --write \"**/*.{js,ts,vue,json,md,yml,yaml}\"",
     "format:check": "prettier --check \"**/*.{js,ts,vue,json,md,yml,yaml}\"",
     "clean": "pnpm --recursive clean && rimraf dist coverage .nyc_output",
@@ -30,16 +30,19 @@
   "author": "Your Name",
   "license": "MIT",
   "devDependencies": {
+    "@eslint/js": "^9.18.0",
     "@types/node": "^20.10.0",
     "@typescript-eslint/eslint-plugin": "^6.0.0",
     "@typescript-eslint/parser": "^6.0.0",
     "eslint": "^8.55.0",
     "eslint-config-prettier": "^10.0.1",
     "eslint-plugin-vue": "~10.0.0",
+    "globals": "^16.0.0",
     "husky": "^9.1.7",
     "lint-staged": "^16.1.2",
     "prettier": "^3.1.0",
-    "typescript": "^5.3.0"
+    "typescript": "^5.3.0",
+    "typescript-eslint": "^8.20.0"
   },
   "engines": {
     "node": ">=18.0.0",
@@ -48,7 +51,7 @@
   "packageManager": "pnpm@8.12.0",
   "lint-staged": {
     "*.{js,ts,vue}": [
-      "eslint --fix",
+      "eslint --fix --no-error-on-unmatched-pattern",
       "prettier --write"
     ],
     "*.{json,md,yml,yaml}": [

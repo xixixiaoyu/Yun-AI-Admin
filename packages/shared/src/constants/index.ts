@@ -14,7 +14,7 @@ export const HTTP_STATUS = {
   CONFLICT: 409,
   UNPROCESSABLE_ENTITY: 422,
   INTERNAL_SERVER_ERROR: 500,
-} as const;
+} as const
 
 // API 响应码
 export const API_CODE = {
@@ -35,14 +35,14 @@ export const API_CODE = {
   PASSWORD_TOO_WEAK: 2006,
   EMAIL_EXISTS: 2007,
   USERNAME_EXISTS: 2008,
-} as const;
+} as const
 
 // 分页默认值
 export const PAGINATION = {
   DEFAULT_PAGE: 1,
   DEFAULT_LIMIT: 10,
   MAX_LIMIT: 100,
-} as const;
+} as const
 
 // Token 配置
 export const TOKEN = {
@@ -50,7 +50,7 @@ export const TOKEN = {
   REFRESH_TOKEN_EXPIRES_IN: '7d',
   RESET_PASSWORD_TOKEN_EXPIRES_IN: '1h',
   EMAIL_VERIFICATION_TOKEN_EXPIRES_IN: '24h',
-} as const;
+} as const
 
 // 缓存键前缀
 export const CACHE_KEY = {
@@ -61,7 +61,7 @@ export const CACHE_KEY = {
   RESET_TOKEN: 'reset_token:',
   VERIFICATION_TOKEN: 'verification_token:',
   RATE_LIMIT: 'rate_limit:',
-} as const;
+} as const
 
 // 文件上传配置
 export const UPLOAD = {
@@ -74,7 +74,7 @@ export const UPLOAD = {
     'application/vnd.ms-excel',
     'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
   ],
-} as const;
+} as const
 
 // 正则表达式
 export const REGEX = {
@@ -83,17 +83,17 @@ export const REGEX = {
   PASSWORD: /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)[a-zA-Z\d@$!%*?&]{8,}$/,
   USERNAME: /^[a-zA-Z0-9_]{3,20}$/,
   URL: /^https?:\/\/.+/,
-} as const;
+} as const
 
 // 默认头像
-export const DEFAULT_AVATAR = '/assets/images/default-avatar.png';
+export const DEFAULT_AVATAR = '/assets/images/default-avatar.png'
 
 // 系统角色代码
 export const SYSTEM_ROLES = {
   SUPER_ADMIN: 'super_admin',
   ADMIN: 'admin',
   USER: 'user',
-} as const;
+} as const
 
 // 系统权限代码
 export const SYSTEM_PERMISSIONS = {
@@ -102,23 +102,23 @@ export const SYSTEM_PERMISSIONS = {
   USER_CREATE: 'user:create',
   USER_UPDATE: 'user:update',
   USER_DELETE: 'user:delete',
-  
+
   // 角色管理
   ROLE_VIEW: 'role:view',
   ROLE_CREATE: 'role:create',
   ROLE_UPDATE: 'role:update',
   ROLE_DELETE: 'role:delete',
-  
+
   // 权限管理
   PERMISSION_VIEW: 'permission:view',
   PERMISSION_CREATE: 'permission:create',
   PERMISSION_UPDATE: 'permission:update',
   PERMISSION_DELETE: 'permission:delete',
-  
+
   // 系统设置
   SYSTEM_CONFIG: 'system:config',
   SYSTEM_LOG: 'system:log',
-} as const;
+} as const
 
 // 菜单路径
 export const MENU_PATHS = {
@@ -129,7 +129,7 @@ export const MENU_PATHS = {
   SYSTEM_CONFIG: '/system/config',
   SYSTEM_LOG: '/system/log',
   PROFILE: '/profile',
-} as const;
+} as const
 
 // 操作类型
 export const OPERATION_TYPES = {
@@ -140,7 +140,7 @@ export const OPERATION_TYPES = {
   LOGOUT: 'logout',
   EXPORT: 'export',
   IMPORT: 'import',
-} as const;
+} as const
 
 // 通知类型
 export const NOTIFICATION_TYPES = {
@@ -148,4 +148,4 @@ export const NOTIFICATION_TYPES = {
   ERROR: 'error',
   WARNING: 'warning',
   INFO: 'info',
-} as const;
+} as const

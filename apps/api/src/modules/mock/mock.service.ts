@@ -1,5 +1,10 @@
 import { Injectable } from '@nestjs/common';
-import { MockDataService, UserStatus, RoleStatus, PermissionStatus } from '../../common/mock/mock-data.service';
+import {
+  MockDataService,
+  UserStatus,
+  RoleStatus,
+  PermissionStatus,
+} from '../../common/mock/mock-data.service';
 
 @Injectable()
 export class MockService {
@@ -21,25 +26,28 @@ export class MockService {
     return {
       users: {
         total: users.length,
-        active: users.filter(u => u.status === UserStatus.ACTIVE).length,
-        inactive: users.filter(u => u.status === UserStatus.INACTIVE).length,
-        banned: users.filter(u => u.status === UserStatus.BANNED).length,
-        pending: users.filter(u => u.status === UserStatus.PENDING).length,
+        active: users.filter((u) => u.status === UserStatus.ACTIVE).length,
+        inactive: users.filter((u) => u.status === UserStatus.INACTIVE).length,
+        banned: users.filter((u) => u.status === UserStatus.BANNED).length,
+        pending: users.filter((u) => u.status === UserStatus.PENDING).length,
       },
       roles: {
         total: roles.length,
-        active: roles.filter(r => r.status === RoleStatus.ACTIVE).length,
-        inactive: roles.filter(r => r.status === RoleStatus.INACTIVE).length,
-        system: roles.filter(r => r.type === 'system').length,
-        custom: roles.filter(r => r.type === 'custom').length,
+        active: roles.filter((r) => r.status === RoleStatus.ACTIVE).length,
+        inactive: roles.filter((r) => r.status === RoleStatus.INACTIVE).length,
+        system: roles.filter((r) => r.type === 'system').length,
+        custom: roles.filter((r) => r.type === 'custom').length,
       },
       permissions: {
         total: permissions.length,
-        active: permissions.filter(p => p.status === PermissionStatus.ACTIVE).length,
-        inactive: permissions.filter(p => p.status === PermissionStatus.INACTIVE).length,
-        menu: permissions.filter(p => p.type === 'menu').length,
-        button: permissions.filter(p => p.type === 'button').length,
-        api: permissions.filter(p => p.type === 'api').length,
+        active: permissions.filter((p) => p.status === PermissionStatus.ACTIVE)
+          .length,
+        inactive: permissions.filter(
+          (p) => p.status === PermissionStatus.INACTIVE,
+        ).length,
+        menu: permissions.filter((p) => p.type === 'menu').length,
+        button: permissions.filter((p) => p.type === 'button').length,
+        api: permissions.filter((p) => p.type === 'api').length,
       },
       lastInitialized: new Date().toISOString(),
     };
@@ -48,9 +56,9 @@ export class MockService {
   async getUsersCount() {
     const users = this.mockDataService.getUsers();
     const statusCounts = {};
-    
-    Object.values(UserStatus).forEach(status => {
-      statusCounts[status] = users.filter(u => u.status === status).length;
+
+    Object.values(UserStatus).forEach((status) => {
+      statusCounts[status] = users.filter((u) => u.status === status).length;
     });
 
     return {
@@ -63,17 +71,17 @@ export class MockService {
   async getRolesCount() {
     const roles = this.mockDataService.getRoles();
     const statusCounts = {};
-    
-    Object.values(RoleStatus).forEach(status => {
-      statusCounts[status] = roles.filter(r => r.status === status).length;
+
+    Object.values(RoleStatus).forEach((status) => {
+      statusCounts[status] = roles.filter((r) => r.status === status).length;
     });
 
     return {
       total: roles.length,
       byStatus: statusCounts,
       byType: {
-        system: roles.filter(r => r.type === 'system').length,
-        custom: roles.filter(r => r.type === 'custom').length,
+        system: roles.filter((r) => r.type === 'system').length,
+        custom: roles.filter((r) => r.type === 'custom').length,
       },
     };
   }
@@ -81,18 +89,20 @@ export class MockService {
   async getPermissionsCount() {
     const permissions = this.mockDataService.getPermissions();
     const statusCounts = {};
-    
-    Object.values(PermissionStatus).forEach(status => {
-      statusCounts[status] = permissions.filter(p => p.status === status).length;
+
+    Object.values(PermissionStatus).forEach((status) => {
+      statusCounts[status] = permissions.filter(
+        (p) => p.status === status,
+      ).length;
     });
 
     return {
       total: permissions.length,
       byStatus: statusCounts,
       byType: {
-        menu: permissions.filter(p => p.type === 'menu').length,
-        button: permissions.filter(p => p.type === 'button').length,
-        api: permissions.filter(p => p.type === 'api').length,
+        menu: permissions.filter((p) => p.type === 'menu').length,
+        button: permissions.filter((p) => p.type === 'button').length,
+        api: permissions.filter((p) => p.type === 'api').length,
       },
       tree: this.mockDataService.buildPermissionTree().length,
     };
@@ -101,11 +111,13 @@ export class MockService {
   private getUserCountByRoles(users: any[]) {
     const roleCounts = {};
     const roles = this.mockDataService.getRoles();
-    
-    roles.forEach(role => {
-      roleCounts[role.code] = users.filter(u => u.roles.includes(role.code)).length;
+
+    roles.forEach((role) => {
+      roleCounts[role.code] = users.filter((u) =>
+        u.roles.includes(role.code),
+      ).length;
     });
-    
+
     return roleCounts;
   }
 }

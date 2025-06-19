@@ -9,7 +9,12 @@ import {
   Query,
   UseGuards,
 } from '@nestjs/common';
-import { ApiTags, ApiOperation, ApiResponse, ApiBearerAuth } from '@nestjs/swagger';
+import {
+  ApiTags,
+  ApiOperation,
+  ApiResponse,
+  ApiBearerAuth,
+} from '@nestjs/swagger';
 import { PermissionService } from './permission.service';
 import { CreatePermissionDto } from './dto/create-permission.dto';
 import { UpdatePermissionDto } from './dto/update-permission.dto';
@@ -99,7 +104,10 @@ export class PermissionController {
   @ApiResponse({ status: 200, description: '更新成功' })
   @ApiResponse({ status: 404, description: '权限不存在' })
   @ApiResponse({ status: 409, description: '权限代码已存在' })
-  async update(@Param('id') id: string, @Body() updatePermissionDto: UpdatePermissionDto) {
+  async update(
+    @Param('id') id: string,
+    @Body() updatePermissionDto: UpdatePermissionDto,
+  ) {
     const result = await this.permissionService.update(id, updatePermissionDto);
     return {
       success: true,
