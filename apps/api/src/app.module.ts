@@ -14,6 +14,8 @@ import redisConfig from './config/redis.config';
 
 // 模块
 import { AuthModule } from './modules/auth/auth.module';
+import { UserModule } from './modules/user/user.module';
+import { RoleModule } from './modules/role/role.module';
 
 // 守卫
 import { JwtAuthGuard } from './modules/auth/guards/jwt-auth.guard';
@@ -50,6 +52,8 @@ import { JwtAuthGuard } from './modules/auth/guards/jwt-auth.guard';
 
     // 业务模块
     AuthModule,
+    UserModule,
+    RoleModule,
   ],
   controllers: [AppController],
   providers: [
