@@ -9,7 +9,10 @@ import {
   OneToMany,
   JoinColumn,
 } from 'typeorm';
-import { PermissionType, PermissionStatus } from '@admin-system/shared';
+import {
+  PermissionType,
+  PermissionStatus,
+} from '../../common/mock/mock-data.service';
 import { Role } from './role.entity';
 
 @Entity('permissions')

@@ -11,7 +11,12 @@ import {
   HttpCode,
   HttpStatus,
 } from '@nestjs/common';
-import { ApiTags, ApiOperation, ApiResponse, ApiBearerAuth } from '@nestjs/swagger';
+import {
+  ApiTags,
+  ApiOperation,
+  ApiResponse,
+  ApiBearerAuth,
+} from '@nestjs/swagger';
 import { UserService } from './user.service';
 import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
@@ -19,7 +24,7 @@ import { QueryUserDto } from './dto/query-user.dto';
 import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
 import { PermissionsGuard } from '../../common/guards/permissions.guard';
 import { Permissions } from '../../common/decorators/permissions.decorator';
-import { UserStatus } from '@admin-system/shared';
+import { UserStatus } from '../../common/mock/mock-data.service';
 
 @ApiTags('用户管理')
 @Controller('users')
@@ -118,7 +123,10 @@ export class UserController {
   @ApiOperation({ summary: '更新用户状态' })
   @ApiResponse({ status: 200, description: '状态更新成功' })
   @ApiResponse({ status: 404, description: '用户不存在' })
-  async updateStatus(@Param('id') id: string, @Body('status') status: UserStatus) {
+  async updateStatus(
+    @Param('id') id: string,
+    @Body('status') status: UserStatus,
+  ) {
     const result = await this.userService.updateStatus(id, status);
     return {
       success: true,
@@ -133,7 +141,10 @@ export class UserController {
   @ApiOperation({ summary: '分配用户角色' })
   @ApiResponse({ status: 200, description: '角色分配成功' })
   @ApiResponse({ status: 404, description: '用户不存在' })
-  async assignRoles(@Param('id') id: string, @Body('roleIds') roleIds: string[]) {
+  async assignRoles(
+    @Param('id') id: string,
+    @Body('roleIds') roleIds: string[],
+  ) {
     const result = await this.userService.assignRoles(id, roleIds);
     return {
       success: true,

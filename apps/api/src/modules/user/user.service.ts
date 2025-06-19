@@ -8,65 +8,20 @@ import * as bcrypt from 'bcryptjs';
 import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
 import { QueryUserDto } from './dto/query-user.dto';
-import { UserStatus } from '@admin-system/shared';
-
-// 模拟用户数据（实际项目中应该使用数据库）
-let mockUsers = [
-  {
-    id: '1',
-    username: 'admin',
-    email: 'admin@example.com',
-    password: '$2a$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', // password
-    nickname: '管理员',
-    status: UserStatus.ACTIVE,
-    roles: ['admin'],
-    permissions: [
-      'user:view',
-      'user:create',
-      'user:update',
-      'user:delete',
-      'role:view',
-      'role:create',
-      'role:update',
-      'role:delete',
-    ],
-    createdAt: new Date('2023-01-01'),
-    updatedAt: new Date('2023-01-01'),
-  },
-  {
-    id: '2',
-    username: 'user',
-    email: 'user@example.com',
-    password: '$2a$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', // password
-    nickname: '普通用户',
-    status: UserStatus.ACTIVE,
-    roles: ['user'],
-    permissions: ['user:view'],
-    createdAt: new Date('2023-01-02'),
-    updatedAt: new Date('2023-01-02'),
-  },
-  {
-    id: '3',
-    username: 'editor',
-    email: 'editor@example.com',
-    password: '$2a$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', // password
-    nickname: '编辑员',
-    status: UserStatus.ACTIVE,
-    roles: ['editor'],
-    permissions: ['user:view', 'user:update'],
-    createdAt: new Date('2023-01-03'),
-    updatedAt: new Date('2023-01-03'),
-  },
-];
+import {
+  MockDataService,
+  UserStatus,
+} from '../../common/mock/mock-data.service';
 
 @Injectable()
 export class UserService {
+  constructor(private readonly mockDataService: MockDataService) {}
   async findAll(queryDto: QueryUserDto) {
     const page = parseInt(queryDto.page || '1', 10);
     const limit = parseInt(queryDto.limit || '10', 10);
     const offset = (page - 1) * limit;
 
-    let filteredUsers = [...mockUsers];
+    let filteredUsers = this.mockDataService.getUsers();
 
     // 关键词搜索
     if (queryDto.keyword) {
@@ -124,7 +79,8 @@ export class UserService {
   }
 
   async findOne(id: string) {
-    const user = mockUsers.find((u) => u.id === id);
+    const users = this.mockDataService.getUsers();
+    const user = users.find((u) => u.id === id);
     if (!user) {
       throw new NotFoundException('用户不存在');
     }
@@ -134,8 +90,10 @@ export class UserService {
   }
 
   async create(createUserDto: CreateUserDto) {
+    const users = this.mockDataService.getUsers();
+
     // 检查用户名是否已存在
-    const existingUser = mockUsers.find(
+    const existingUser = users.find(
       (u) => u.username === createUserDto.username,
     );
     if (existingUser) {
@@ -143,9 +101,7 @@ export class UserService {
     }
 
     // 检查邮箱是否已存在
-    const existingEmail = mockUsers.find(
-      (u) => u.email === createUserDto.email,
-    );
+    const existingEmail = users.find((u) => u.email === createUserDto.email);
     if (existingEmail) {
       throw new ConflictException('邮箱已存在');
     }
@@ -153,7 +109,7 @@ export class UserService {
     // 创建新用户
     const hashedPassword = await bcrypt.hash(createUserDto.password, 10);
     const newUser = {
-      id: String(mockUsers.length + 1),
+      id: String(users.length + 1),
       username: createUserDto.username,
       email: createUserDto.email,
       password: hashedPassword,
@@ -163,29 +119,29 @@ export class UserService {
       gender: createUserDto.gender,
       birthday: createUserDto.birthday,
       status: createUserDto.status || UserStatus.ACTIVE,
+      emailVerified: false,
       roles: createUserDto.roleIds || ['user'],
-      permissions: ['user:view'], // 默认权限
+      permissions: [], // 默认无直接权限，通过角色获得
       createdAt: new Date(),
       updatedAt: new Date(),
     };
 
-    mockUsers.push(newUser);
+    this.mockDataService.addUser(newUser);
 
     const { password, ...userWithoutPassword } = newUser;
     return userWithoutPassword;
   }
 
   async update(id: string, updateUserDto: UpdateUserDto) {
-    const userIndex = mockUsers.findIndex((u) => u.id === id);
-    if (userIndex === -1) {
+    const users = this.mockDataService.getUsers();
+    const user = users.find((u) => u.id === id);
+    if (!user) {
       throw new NotFoundException('用户不存在');
     }
 
-    const user = mockUsers[userIndex];
-
     // 检查用户名是否已被其他用户使用
     if (updateUserDto.username && updateUserDto.username !== user.username) {
-      const existingUser = mockUsers.find(
+      const existingUser = users.find(
         (u) => u.username === updateUserDto.username && u.id !== id,
       );
       if (existingUser) {
@@ -195,7 +151,7 @@ export class UserService {
 
     // 检查邮箱是否已被其他用户使用
     if (updateUserDto.email && updateUserDto.email !== user.email) {
-      const existingEmail = mockUsers.find(
+      const existingEmail = users.find(
         (u) => u.email === updateUserDto.email && u.id !== id,
       );
       if (existingEmail) {
@@ -209,31 +165,36 @@ export class UserService {
     }
 
     // 更新用户信息
-    const updatedUser = {
-      ...user,
+    const updatedUser = this.mockDataService.updateUser(id, {
       ...updateUserDto,
       roles: updateUserDto.roleIds || user.roles,
-      updatedAt: new Date(),
-    };
+    });
 
-    mockUsers[userIndex] = updatedUser;
+    if (!updatedUser) {
+      throw new NotFoundException('用户不存在');
+    }
 
     const { password, ...userWithoutPassword } = updatedUser;
     return userWithoutPassword;
   }
 
   async remove(id: string) {
-    const userIndex = mockUsers.findIndex((u) => u.id === id);
-    if (userIndex === -1) {
+    const users = this.mockDataService.getUsers();
+    const user = users.find((u) => u.id === id);
+    if (!user) {
       throw new NotFoundException('用户不存在');
     }
 
     // 不允许删除管理员账户
-    if (mockUsers[userIndex].username === 'admin') {
+    if (user.username === 'superadmin' || user.username === 'admin') {
       throw new BadRequestException('不能删除管理员账户');
     }
 
-    mockUsers.splice(userIndex, 1);
+    const success = this.mockDataService.removeUser(id);
+    if (!success) {
+      throw new NotFoundException('用户不存在');
+    }
+
     return { message: '用户删除成功' };
   }
 
@@ -243,19 +204,24 @@ export class UserService {
 
     for (const id of ids) {
       try {
-        const userIndex = mockUsers.findIndex((u) => u.id === id);
-        if (userIndex === -1) {
+        const users = this.mockDataService.getUsers();
+        const user = users.find((u) => u.id === id);
+        if (!user) {
           errors.push({ id, error: '用户不存在' });
           continue;
         }
 
-        if (mockUsers[userIndex].username === 'admin') {
+        if (user.username === 'superadmin' || user.username === 'admin') {
           errors.push({ id, error: '不能删除管理员账户' });
           continue;
         }
 
-        mockUsers.splice(userIndex, 1);
-        deletedUsers.push(id);
+        const success = this.mockDataService.removeUser(id);
+        if (success) {
+          deletedUsers.push(id);
+        } else {
+          errors.push({ id, error: '删除失败' });
+        }
       } catch (error) {
         errors.push({ id, error: error.message });
       }
@@ -269,28 +235,24 @@ export class UserService {
   }
 
   async updateStatus(id: string, status: UserStatus) {
-    const userIndex = mockUsers.findIndex((u) => u.id === id);
-    if (userIndex === -1) {
+    const updatedUser = this.mockDataService.updateUser(id, { status });
+    if (!updatedUser) {
       throw new NotFoundException('用户不存在');
     }
 
-    mockUsers[userIndex].status = status;
-    mockUsers[userIndex].updatedAt = new Date();
-
-    const { password, ...userWithoutPassword } = mockUsers[userIndex];
+    const { password, ...userWithoutPassword } = updatedUser;
     return userWithoutPassword;
   }
 
   async assignRoles(userId: string, roleIds: string[]) {
-    const userIndex = mockUsers.findIndex((u) => u.id === userId);
-    if (userIndex === -1) {
+    const updatedUser = this.mockDataService.updateUser(userId, {
+      roles: roleIds,
+    });
+    if (!updatedUser) {
       throw new NotFoundException('用户不存在');
     }
 
-    mockUsers[userIndex].roles = roleIds;
-    mockUsers[userIndex].updatedAt = new Date();
-
-    const { password, ...userWithoutPassword } = mockUsers[userIndex];
+    const { password, ...userWithoutPassword } = updatedUser;
     return userWithoutPassword;
   }
 }

@@ -1,6 +1,15 @@
-import { IsString, IsNotEmpty, IsEmail, IsOptional, IsEnum, IsArray, MinLength, MaxLength } from 'class-validator';
+import {
+  IsString,
+  IsNotEmpty,
+  IsEmail,
+  IsOptional,
+  IsEnum,
+  IsArray,
+  MinLength,
+  MaxLength,
+} from 'class-validator';
 import { ApiProperty } from '@nestjs/swagger';
-import { UserStatus, Gender } from '@admin-system/shared';
+import { UserStatus, Gender } from '../../../common/mock/mock-data.service';
 
 export class CreateUserDto {
   @ApiProperty({ description: '用户名', example: 'newuser' })
@@ -21,7 +30,11 @@ export class CreateUserDto {
   @MinLength(8)
   password: string;
 
-  @ApiProperty({ description: '手机号', example: '13800138000', required: false })
+  @ApiProperty({
+    description: '手机号',
+    example: '13800138000',
+    required: false,
+  })
   @IsOptional()
   @IsString()
   phone?: string;
@@ -52,7 +65,11 @@ export class CreateUserDto {
   @IsEnum(UserStatus)
   status?: UserStatus;
 
-  @ApiProperty({ description: '角色ID列表', example: ['role1', 'role2'], required: false })
+  @ApiProperty({
+    description: '角色ID列表',
+    example: ['role1', 'role2'],
+    required: false,
+  })
   @IsOptional()
   @IsArray()
   @IsString({ each: true })

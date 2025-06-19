@@ -1,63 +1,51 @@
-import { Injectable, UnauthorizedException, ConflictException, BadRequestException } from '@nestjs/common';
+import {
+  Injectable,
+  UnauthorizedException,
+  ConflictException,
+  BadRequestException,
+} from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
 import { ConfigService } from '@nestjs/config';
 import * as bcrypt from 'bcryptjs';
 import { LoginDto } from './dto/login.dto';
 import { RegisterDto } from './dto/register.dto';
-import { UserStatus } from '@admin-system/shared';
-
-// 模拟用户数据（实际项目中应该使用数据库）
-const mockUsers = [
-  {
-    id: '1',
-    username: 'admin',
-    email: 'admin@example.com',
-    password: '$2a$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', // password
-    nickname: '管理员',
-    status: UserStatus.ACTIVE,
-    roles: ['admin'],
-    permissions: ['user:view', 'user:create', 'user:update', 'user:delete', 'role:view', 'role:create', 'role:update', 'role:delete'],
-    createdAt: new Date(),
-    updatedAt: new Date(),
-  },
-  {
-    id: '2',
-    username: 'user',
-    email: 'user@example.com',
-    password: '$2a$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', // password
-    nickname: '普通用户',
-    status: UserStatus.ACTIVE,
-    roles: ['user'],
-    permissions: ['user:view'],
-    createdAt: new Date(),
-    updatedAt: new Date(),
-  },
-];
+import {
+  MockDataService,
+  UserStatus,
+  Gender,
+} from '../../common/mock/mock-data.service';
 
 @Injectable()
 export class AuthService {
   constructor(
     private jwtService: JwtService,
     private configService: ConfigService,
+    private mockDataService: MockDataService,
   ) {}
 
   async validateUser(username: string, password: string): Promise<any> {
-    const user = mockUsers.find(u => u.username === username);
-    if (user && await bcrypt.compare(password, user.password)) {
+    const users = this.mockDataService.getUsers();
+    const user = users.find((u) => u.username === username);
+    if (user && (await bcrypt.compare(password, user.password))) {
       if (user.status !== UserStatus.ACTIVE) {
         throw new UnauthorizedException('账户已被禁用');
       }
       const { password: _, ...result } = user;
-      return result;
+      // 获取用户的完整权限（包括角色权限）
+      const permissions = this.mockDataService.getUserPermissions(user.id);
+      return { ...result, permissions };
     }
     return null;
   }
 
   async validateUserById(userId: string): Promise<any> {
-    const user = mockUsers.find(u => u.id === userId);
+    const users = this.mockDataService.getUsers();
+    const user = users.find((u) => u.id === userId);
     if (user && user.status === UserStatus.ACTIVE) {
       const { password: _, ...result } = user;
-      return result;
+      // 获取用户的完整权限（包括角色权限）
+      const permissions = this.mockDataService.getUserPermissions(user.id);
+      return { ...result, permissions };
     }
     return null;
   }
@@ -104,14 +92,16 @@ export class AuthService {
       throw new BadRequestException('两次输入的密码不一致');
     }
 
+    const users = this.mockDataService.getUsers();
+
     // 检查用户名是否已存在
-    const existingUser = mockUsers.find(u => u.username === registerDto.username);
+    const existingUser = users.find((u) => u.username === registerDto.username);
     if (existingUser) {
       throw new ConflictException('用户名已存在');
     }
 
     // 检查邮箱是否已存在
-    const existingEmail = mockUsers.find(u => u.email === registerDto.email);
+    const existingEmail = users.find((u) => u.email === registerDto.email);
     if (existingEmail) {
       throw new ConflictException('邮箱已存在');
     }
@@ -119,20 +109,21 @@ export class AuthService {
     // 创建新用户
     const hashedPassword = await bcrypt.hash(registerDto.password, 10);
     const newUser = {
-      id: String(mockUsers.length + 1),
+      id: String(users.length + 1),
       username: registerDto.username,
       email: registerDto.email,
       password: hashedPassword,
       nickname: registerDto.nickname || registerDto.username,
       phone: registerDto.phone,
       status: UserStatus.ACTIVE,
+      emailVerified: false,
       roles: ['user'],
-      permissions: ['user:view'],
+      permissions: [],
       createdAt: new Date(),
       updatedAt: new Date(),
     };
 
-    mockUsers.push(newUser);
+    this.mockDataService.addUser(newUser);
 
     // 自动登录
     return this.login({
@@ -190,8 +181,11 @@ export class AuthService {
       nickname: user.nickname,
       phone: user.phone,
       status: user.status,
-      roles: user.roles.map(role => ({ code: role, name: role })),
-      permissions: user.permissions.map(permission => ({ code: permission, name: permission })),
+      roles: user.roles.map((role) => ({ code: role, name: role })),
+      permissions: user.permissions.map((permission) => ({
+        code: permission,
+        name: permission,
+      })),
       createdAt: user.createdAt,
       updatedAt: user.updatedAt,
     };

@@ -7,7 +7,7 @@ import {
   ManyToMany,
   JoinTable,
 } from 'typeorm';
-import { RoleStatus, RoleType } from '@admin-system/shared';
+import { RoleStatus, RoleType } from '../../common/mock/mock-data.service';
 import { User } from './user.entity';
 import { Permission } from './permission.entity';
 

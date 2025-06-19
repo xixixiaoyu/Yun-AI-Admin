@@ -16,6 +16,8 @@ import redisConfig from './config/redis.config';
 import { AuthModule } from './modules/auth/auth.module';
 import { UserModule } from './modules/user/user.module';
 import { RoleModule } from './modules/role/role.module';
+import { PermissionModule } from './modules/permission/permission.module';
+import { MockModule } from './modules/mock/mock.module';
 
 // 守卫
 import { JwtAuthGuard } from './modules/auth/guards/jwt-auth.guard';
@@ -54,6 +56,8 @@ import { JwtAuthGuard } from './modules/auth/guards/jwt-auth.guard';
     AuthModule,
     UserModule,
     RoleModule,
+    PermissionModule,
+    MockModule,
   ],
   controllers: [AppController],
   providers: [

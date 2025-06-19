@@ -1,6 +1,12 @@
-import { IsOptional, IsString, IsEnum, IsDateString, IsNumberString } from 'class-validator';
+import {
+  IsOptional,
+  IsString,
+  IsEnum,
+  IsDateString,
+  IsNumberString,
+} from 'class-validator';
 import { ApiProperty } from '@nestjs/swagger';
-import { UserStatus } from '@admin-system/shared';
+import { UserStatus } from '../../../common/mock/mock-data.service';
 
 export class QueryUserDto {
   @ApiProperty({ description: '页码', example: 1, required: false })
@@ -28,12 +34,20 @@ export class QueryUserDto {
   @IsString()
   roleId?: string;
 
-  @ApiProperty({ description: '开始日期', example: '2023-01-01', required: false })
+  @ApiProperty({
+    description: '开始日期',
+    example: '2023-01-01',
+    required: false,
+  })
   @IsOptional()
   @IsDateString()
   startDate?: string;
 
-  @ApiProperty({ description: '结束日期', example: '2023-12-31', required: false })
+  @ApiProperty({
+    description: '结束日期',
+    example: '2023-12-31',
+    required: false,
+  })
   @IsOptional()
   @IsDateString()
   endDate?: string;

@@ -8,7 +8,7 @@ import {
   JoinTable,
 } from 'typeorm';
 import { Exclude } from 'class-transformer';
-import { UserStatus, Gender } from '@admin-system/shared';
+import { UserStatus, Gender } from '../../common/mock/mock-data.service';
 import { Role } from './role.entity';
 
 @Entity('users')
