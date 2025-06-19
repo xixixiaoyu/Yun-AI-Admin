@@ -7,14 +7,9 @@
           <h1 class="text-3xl font-bold text-gray-900 mb-2">Admin System</h1>
           <p class="text-gray-600">后台管理系统</p>
         </div>
-        
+
         <!-- 登录表单 -->
-        <a-form
-          :model="formData"
-          :rules="rules"
-          @finish="handleSubmit"
-          layout="vertical"
-        >
+        <a-form :model="formData" :rules="rules" @finish="handleSubmit" layout="vertical">
           <a-form-item label="用户名" name="username">
             <a-input
               v-model:value="formData.username"
@@ -23,7 +18,7 @@
               :prefix="h(UserOutlined)"
             />
           </a-form-item>
-          
+
           <a-form-item label="密码" name="password">
             <a-input-password
               v-model:value="formData.password"
@@ -32,18 +27,14 @@
               :prefix="h(LockOutlined)"
             />
           </a-form-item>
-          
+
           <a-form-item>
             <div class="flex-between">
-              <a-checkbox v-model:checked="formData.remember">
-                记住登录状态
-              </a-checkbox>
-              <a-button type="link" class="p-0">
-                忘记密码？
-              </a-button>
+              <a-checkbox v-model:checked="formData.remember"> 记住登录状态 </a-checkbox>
+              <a-button type="link" class="p-0"> 忘记密码？ </a-button>
             </div>
           </a-form-item>
-          
+
           <a-form-item>
             <a-button
               type="primary"
@@ -56,7 +47,7 @@
             </a-button>
           </a-form-item>
         </a-form>
-        
+
         <!-- 注册链接 -->
         <div class="text-center mt-6">
           <span class="text-gray-600">还没有账号？</span>
@@ -70,7 +61,7 @@
 </template>
 
 <script setup lang="ts">
-import { reactive, h } from 'vue'
+import { reactive, h, nextTick } from 'vue'
 import { useRouter } from 'vue-router'
 import { message } from 'ant-design-vue'
 import { UserOutlined, LockOutlined } from '@ant-design/icons-vue'
@@ -104,6 +95,8 @@ const handleSubmit = async () => {
   try {
     const success = await authStore.login(formData)
     if (success) {
+      // 等待状态更新完成后再跳转
+      await nextTick()
       // 登录成功，跳转到仪表盘
       router.push('/dashboard')
     }
