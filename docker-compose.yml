@@ -1,0 +1,75 @@
+version: '3.8'
+
+services:
+  # 数据库
+  postgres:
+    image: postgres:15-alpine
+    container_name: admin-postgres
+    environment:
+      POSTGRES_DB: admin_system
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: password
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    networks:
+      - admin-network
+
+  # Redis
+  redis:
+    image: redis:7-alpine
+    container_name: admin-redis
+    ports:
+      - "6379:6379"
+    volumes:
+      - redis_data:/data
+    networks:
+      - admin-network
+
+  # 后端 API
+  api:
+    build:
+      context: .
+      target: api
+    container_name: admin-api
+    environment:
+      NODE_ENV: production
+      PORT: 3333
+      DB_HOST: postgres
+      DB_PORT: 5432
+      DB_USERNAME: postgres
+      DB_PASSWORD: password
+      DB_DATABASE: admin_system
+      REDIS_HOST: redis
+      REDIS_PORT: 6379
+      JWT_SECRET: your-production-jwt-secret
+      JWT_REFRESH_SECRET: your-production-refresh-secret
+    ports:
+      - "3333:3333"
+    depends_on:
+      - postgres
+      - redis
+    networks:
+      - admin-network
+
+  # 前端管理界面
+  admin:
+    build:
+      context: .
+      target: admin
+    container_name: admin-frontend
+    ports:
+      - "80:80"
+    depends_on:
+      - api
+    networks:
+      - admin-network
+
+volumes:
+  postgres_data:
+  redis_data:
+
+networks:
+  admin-network:
+    driver: bridge
