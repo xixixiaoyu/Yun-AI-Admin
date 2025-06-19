@@ -1,0 +1,35 @@
+{
+  "name": "admin-system",
+  "version": "1.0.0",
+  "description": "基于 Vue 3 + NestJS 的后台管理系统",
+  "private": true,
+  "scripts": {
+    "dev": "pnpm --parallel --filter \"./apps/*\" dev",
+    "build": "pnpm --filter \"./packages/*\" build && pnpm --filter \"./apps/*\" build",
+    "lint": "pnpm --recursive lint",
+    "format": "prettier --write \"**/*.{js,ts,vue,json,md}\"",
+    "clean": "pnpm --recursive clean",
+    "test": "pnpm --recursive test"
+  },
+  "keywords": [
+    "admin",
+    "vue3",
+    "nestjs",
+    "typescript",
+    "monorepo",
+    "pnpm"
+  ],
+  "author": "Your Name",
+  "license": "MIT",
+  "devDependencies": {
+    "@types/node": "^20.10.0",
+    "eslint": "^8.55.0",
+    "prettier": "^3.1.0",
+    "typescript": "^5.3.0"
+  },
+  "engines": {
+    "node": ">=18.0.0",
+    "pnpm": ">=8.0.0"
+  },
+  "packageManager": "pnpm@8.12.0"
+}
